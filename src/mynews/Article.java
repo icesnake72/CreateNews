@@ -1,5 +1,6 @@
 package mynews;
 
+
 import lombok.Data;
 
 @Data
