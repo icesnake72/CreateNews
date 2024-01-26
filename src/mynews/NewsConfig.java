@@ -1,2 +1,3 @@
-package mynews;public record NewsConfig() {
-}
+package mynews;
+
+public record NewsConfig(String key, String category, String country) {}
