@@ -1,8 +1,10 @@
 package mynews;
 
+import javax.swing.text.html.Option;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Optional;
 
 public class NewsDB {
     private DatabaseConnector dbConnector;
@@ -39,19 +41,20 @@ public class NewsDB {
     }
 
     public long querySourceId(String name) {
-        String sql = String.format("select * from source where s_name='%s';", name);
+        String formattedName = Optional.ofNullable(name).orElse("").replace("'", "\\'");
+        String sql = String.format("select * from source where s_name='%s';", formattedName);
         try(ResultSet rs = dbConnector.getStatement().executeQuery(sql)) {
             if (rs.next()) {
                 return rs.getLong("id");
             }
 
             // 해당 데이터가 없는 경우에는 새로 추가를 해주고 그에 대한 id를 다시 쿼리한다.
-            sql = String.format("insert into source(s_name) values('%s');", name);
+            sql = String.format("insert into source(s_name) values('%s');", formattedName);
             int ret = dbConnector.getStatement().executeUpdate(sql);
             if ( ret==0 )
                 return 0;   // 실패
 
-            sql = String.format("select * from source where s_name='%s';", name);
+            sql = String.format("select * from source where s_name='%s';", formattedName);
             try(ResultSet rs2 = dbConnector.getStatement().executeQuery(sql)) {
                 if (rs2.next())
                     return rs2.getLong("id");
